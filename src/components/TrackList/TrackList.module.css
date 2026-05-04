@@ -1,0 +1,16 @@
+.content__playlist {
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+}
+
+.content__playlist {
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  scrollbar-width: none; 
+}
+
+.content__playlist::-webkit-scrollbar {
+  display: none; 
+}
