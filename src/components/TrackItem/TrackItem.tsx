@@ -1,3 +1,4 @@
+import React from 'react';
 import Link from 'next/link';
 import styles from './TrackItem.module.css';
 
@@ -5,11 +6,17 @@ interface TrackItemProps {
   title: string;
   author: string;
   album: string;
-  time: string;
+  duration: string;
   href?: string;
 }
 
-export default function TrackItem({ title, author, album, time, href = '/' }: TrackItemProps) {
+export default function TrackItem({
+  title,
+  author,
+  album,
+  duration,
+  href = '/',
+}: TrackItemProps) {
   return (
     <div className={styles.playlist__item}>
       <div className={styles.playlist__track}>
@@ -35,7 +42,7 @@ export default function TrackItem({ title, author, album, time, href = '/' }: Tr
           <svg className={styles.track__timeSvg}>
             <use xlinkHref="/img/icon/sprite.svg#icon-like"></use>
           </svg>
-          <span className={styles.track__timeText}>{time}</span>
+          <span className={styles.track__timeText}>{duration}</span>
         </div>
       </div>
     </div>

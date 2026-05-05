@@ -1,8 +1,22 @@
-import Link from 'next/link';
+'use client';
+
+import { useState } from 'react';
 import styles from './MainContent.module.css';
 import TrackList from '../TrackList/TrackList';
+import { tracks } from '../../data/tracks';
 
 export default function MainContent() {
+  const [activeFilter, setActiveFilter] = useState<'author' | 'year' | 'genre' | null>(null);
+
+
+  const uniqueAuthors = [...new Set(tracks.map((track) => track.author))];
+  const uniqueGenres = [...new Set(tracks.map((track) => track.genre))];
+  const uniqueYears = [...new Set(tracks.map((track) => track.year))].sort((a, b) => a - b);
+
+  const toggleFilter = (filter: 'author' | 'year' | 'genre') => {
+    setActiveFilter((prev) => (prev === filter ? null : filter));
+  };
+
   return (
     <div className={styles.centerblock}>
       <div className={styles.centerblock__search}>
@@ -19,10 +33,59 @@ export default function MainContent() {
       <h2 className={styles.centerblock__h2}>Треки</h2>
       <div className={styles.centerblock__filter}>
         <div className={styles.filter__title}>Искать по:</div>
-        <div className={styles.filter__button}>исполнителю</div>
-        <div className={styles.filter__button}>году выпуска</div>
-        <div className={styles.filter__button}>жанру</div>
+        <button
+          className={`${styles.filter__button} ${activeFilter === 'author' ? styles.active : ''}`}
+          onClick={() => toggleFilter('author')}
+        >
+          исполнителю
+        </button>
+        <button
+          className={`${styles.filter__button} ${activeFilter === 'year' ? styles.active : ''}`}
+          onClick={() => toggleFilter('year')}
+        >
+          году выпуска
+        </button>
+        <button
+          className={`${styles.filter__button} ${activeFilter === 'genre' ? styles.active : ''}`}
+          onClick={() => toggleFilter('genre')}
+        >
+          жанру
+        </button>
       </div>
+
+      {}
+      {activeFilter === 'author' && (
+        <div className={styles.filter__list}>
+          {uniqueAuthors.map((author) => (
+            <div key={author} className={styles.filter__item}>
+              {author}
+            </div>
+          ))}
+        </div>
+      )}
+
+      {}
+      {activeFilter === 'year' && (
+        <div className={styles.filter__list}>
+          {uniqueYears.map((year) => (
+            <div key={year} className={styles.filter__item}>
+              {year}
+            </div>
+          ))}
+        </div>
+      )}
+
+      {}
+      {activeFilter === 'genre' && (
+        <div className={styles.filter__list}>
+          {uniqueGenres.map((genre) => (
+            <div key={genre} className={styles.filter__item}>
+              {genre}
+            </div>
+          ))}
+        </div>
+      )}
+
       <div className={styles.centerblock__content}>
         <div className={styles.content__title}>
           <div className={`${styles.playlistTitle__col} ${styles.col01}`}>Трек</div>

@@ -74,13 +74,21 @@
   border: 1px solid #ffffff;
   border-radius: 60px;
   padding: 6px 20px;
-  color: #ffffff;
+  background-color: transparent;   
+  color: #ffffff;                  
+  cursor: pointer;
+  transition: all 0.2s ease;
 }
 
 .filter__button:not(:last-child) {
   margin-right: 10px;
 }
 
+.filter__button:hover {
+  border-color: #b672ff;
+  color: #b672ff;
+  background-color: transparent;
+}
 .centerblock__content {
   display: flex;
   flex-direction: column;
@@ -126,4 +134,41 @@
 .col04 {
   width: 60px;
   text-align: end;
+}
+
+.filter__list {
+  color: white;
+  display: flex;
+  gap: 28px;
+  height: max-content;
+  max-height: 237px;
+  overflow-y: auto;
+  flex-direction: column;
+  width: max-content;
+  max-width: 248px;
+  background-color: #1a1a1a;
+  border-radius: 12px;
+  padding: 16px;
+  position: absolute;
+  z-index: 10;
+  margin-top: 8px;
+  scrollbar-width: none; 
+}
+
+.filter__list::-webkit-scrollbar {
+  width: 0; 
+  background: transparent;
+}
+
+.filter__item {
+  cursor: pointer;
+}
+
+.filter__item:hover {
+  text-decoration: underline;
+}
+
+.active {
+  color: #b672ff;
+  border-color: #b672ff;
 }
