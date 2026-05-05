@@ -9,10 +9,14 @@ export default function TrackList() {
       {tracks.map((track) => (
         <TrackItem
           key={track.id}
+          id={track.id}
           title={track.title}
           author={track.author}
           album={track.album}
           duration={track.duration}
+          genre={track.genre}
+          year={track.year}
+          trackFile={track.track_file}
         />
       ))}
     </div>

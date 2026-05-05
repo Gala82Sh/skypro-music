@@ -5,10 +5,11 @@
 }
 
 .content__playlist {
+   max-height: 400px;      
+  overflow-y: auto;
   display: flex;
   flex-direction: column;
-  overflow-y: auto;
-  scrollbar-width: none; 
+  scrollbar-width: none;  
 }
 
 .content__playlist::-webkit-scrollbar {

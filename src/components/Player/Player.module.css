@@ -1,0 +1,51 @@
+.player {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: #181818;
+  color: white;
+  padding: 16px 32px;
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  border-top: 1px solid #282828;
+  z-index: 100;
+}
+
+.trackInfo {
+  flex: 1;
+}
+
+.trackName {
+  font-size: 14px;
+  font-weight: 500;
+  margin-bottom: 4px;
+}
+
+.trackAuthor {
+  font-size: 12px;
+  color: #b3b3b3;
+}
+
+.controls {
+  display: flex;
+  gap: 16px;
+}
+
+.playButton {
+  background: white;
+  border: none;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  font-size: 20px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.playButton:hover {
+  transform: scale(1.05);
+}

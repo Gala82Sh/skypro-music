@@ -1,58 +1,145 @@
 export interface Track {
-  id: number;       
-  title: string;     
-  author: string;     
-  album: string;   
-  duration: string;   
-  genre: string;      
-  year: number;       
+  id: number;
+  title: string;
+  author: string;
+  album: string;
+  duration: string;
+  genre: string;
+  year: number;
+  track_file: string;
 }
-
 
 export const tracks: Track[] = [
   {
     id: 1,
-    title: 'Guilt',
-    author: 'Nero',
-    album: 'Welcome Reality',
-    duration: '4:44',
-    genre: 'Drum & Bass',
+    title: 'Лето',
+    author: 'Чи-Ли',
+    album: 'Лето',
+    duration: '3:47',
+    genre: 'Pop',
     year: 2010,
+    track_file: '/music/chi-li_-leto.mp3',
   },
   {
     id: 2,
-    title: 'Elektro',
-    author: 'Dynoro, Outwork, Mr. Gee',
-    album: 'Elektro',
-    duration: '2:22',
-    genre: 'House',
-    year: 2016,
+    title: 'Дембельская',
+    author: 'Неизвестен',
+    album: 'Дембельская',
+    duration: '3:04',
+    genre: 'Шансон',
+    year: 2025,
+    track_file: '/music/dembelskaya.mp3',
   },
   {
     id: 3,
-    title: 'I’m Fire',
-    author: 'Ali Bakgor',
-    album: 'I’m Fire',
-    duration: '2:22',
-    genre: 'Electronic',
-    year: 2019,
+    title: 'Феникс',
+    author: 'Bearwolf',
+    album: 'Феникс',
+    duration: '2:52',
+    genre: 'Pop-rock',
+    year: 2025,
+    track_file: '/music/feniks.mp3',
   },
   {
     id: 4,
-    title: 'Non Stop',
-    author: 'Стоункат, Psychopath',
-    album: 'Non Stop',
-    duration: '4:12',
-    genre: 'Rap',
+    title: 'Фотосессия',
+    author: 'Ленинград',
+    album: 'Ленинград',
+    duration: '3:32',
+    genre: 'Russian rock',
     year: 2020,
+    track_file: '/music/leningrad.mp3',
   },
   {
     id: 5,
-    title: 'Run Run',
-    author: 'Jaded, Will Clarke, AR/CO',
-    album: 'Run Run',
-    duration: '2:54',
-    genre: 'House',
-    year: 2021,
+    title: 'Angel',
+    author: 'Morandi',
+    album: 'Angels',
+    duration: '3:44',
+    genre: 'Pop',
+    year: 2015,
+    track_file: '/music/morandi-angel.mp3',
   },
+  {
+    id: 6,
+    title: 'Ты можешь всё',
+    author: 'MalinovskaЯ',
+    album: 'Ты можешь всё',
+    duration: '2:26',
+    genre: 'Pop',
+    year: 2026,
+    track_file: '/music/ty_mozhesh_vsjo.mp3',
+  },
+  {
+    id: 7,
+    title: 'У лукоморья дуб зелёный',
+    author: 'DJ Блокnote',
+    album: 'Сказки',
+    duration: '2:58',
+    genre: 'Сказка',
+    year: 2025,
+    track_file: '/music/u_lukomorya_dub_zeljonyjj.mp3',
+  },
+  {
+    id: 8,
+    title: 'Валькирия',
+    author: 'Bearwolf',
+    album: 'Валькирия',
+    duration: '2:43',
+    genre: 'Pop-rock',
+    year: 2025,
+    track_file: '/music/valkiriya.mp3',
+  },
+
+  {
+  id: 9,
+  title: 'Не плачь',
+  author: 'БумеR',
+  album: 'Ne Plach',
+  duration: '4:38',
+  genre: 'Шансон',
+  year: 2010,
+  track_file: '/music/ne_plach.mp3',
+},
+{
+  id: 10,
+  title: 'Новый год в постели',
+  author: 'Чи-Ли',
+  album: 'Novyjj God V Posteli',
+  duration: '3:31',
+  genre: 'Pop',
+  year: 2006,
+  track_file: '/music/novyjj_god_v_posteli.mp3',
+},
+{
+  id: 11,
+  title: 'Ромашковое поле',
+  author: 'Чи-Ли',
+  album: 'Romashkovoe Pole',
+  duration: '3:22',
+  genre: 'Pop',
+  year: 2011,
+  track_file: '/music/romashkovoe_pole.mp3',
+},
+{
+  id: 12,
+  title: 'Бородино',
+  author: 'DJ Блокnote',
+  album: 'Borodino',
+  duration: '2:23',
+  genre: 'Сказки',
+  year: 2015,
+  track_file: '/music/borodino.mp3',
+},
+{
+  id: 13,
+  title: 'В платье белом',
+  author: 'Ляпис Трубецкой',
+  album: 'V Plate Belom',
+  duration: '4:58',
+  genre: 'Pop',
+  year: 1998,
+  track_file: '/music/v_plate_belom.mp3',
+},
+
 ];
