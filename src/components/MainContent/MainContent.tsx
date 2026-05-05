@@ -7,7 +7,7 @@ import { tracks } from '../../data/tracks';
 
 export default function MainContent() {
   const [activeFilter, setActiveFilter] = useState<'author' | 'year' | 'genre' | null>(null);
-
+  const [searchQuery, setSearchQuery] = useState('');
 
   const uniqueAuthors = [...new Set(tracks.map((track) => track.author))];
   const uniqueGenres = [...new Set(tracks.map((track) => track.genre))];
@@ -16,6 +16,13 @@ export default function MainContent() {
   const toggleFilter = (filter: 'author' | 'year' | 'genre') => {
     setActiveFilter((prev) => (prev === filter ? null : filter));
   };
+
+  
+  const filteredTracks = tracks.filter((track) =>
+    track.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    track.author.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    track.album.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   return (
     <div className={styles.centerblock}>
@@ -28,6 +35,8 @@ export default function MainContent() {
           type="search"
           placeholder="Поиск"
           name="search"
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
         />
       </div>
       <h2 className={styles.centerblock__h2}>Треки</h2>
@@ -64,7 +73,6 @@ export default function MainContent() {
         </div>
       )}
 
-      {}
       {activeFilter === 'year' && (
         <div className={styles.filter__list}>
           {uniqueYears.map((year) => (
@@ -75,7 +83,6 @@ export default function MainContent() {
         </div>
       )}
 
-      {}
       {activeFilter === 'genre' && (
         <div className={styles.filter__list}>
           {uniqueGenres.map((genre) => (
@@ -98,7 +105,7 @@ export default function MainContent() {
           </div>
         </div>
 
-        <TrackList />
+        <TrackList tracks={filteredTracks} />
       </div>
     </div>
   );

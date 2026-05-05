@@ -19,17 +19,25 @@ export default function PlayerBar() {
   const { currentTrack, isPlaying, isRepeat, isShuffle, likedTracks } = useAppSelector((state) => state.tracks);
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
-  
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
-
- 
   const [volume, setVolume] = useState(50);
+  const [audioError, setAudioError] = useState(false);
 
- 
   const isLiked = currentTrack ? likedTracks.includes(currentTrack.id) : false;
 
-  
+  const isFirstTrack = () => {
+    if (!currentTrack) return true;
+    const currentIndex = tracks.findIndex((t) => t.id === currentTrack.id);
+    return currentIndex === 0;
+  };
+
+  const isLastTrack = () => {
+    if (!currentTrack) return true;
+    const currentIndex = tracks.findIndex((t) => t.id === currentTrack.id);
+    return currentIndex === tracks.length - 1;
+  };
+
   useEffect(() => {
     const savedLikes = localStorage.getItem('likedTracks');
     if (savedLikes) {
@@ -37,12 +45,10 @@ export default function PlayerBar() {
     }
   }, [dispatch]);
 
- 
   useEffect(() => {
     localStorage.setItem('likedTracks', JSON.stringify(likedTracks));
   }, [likedTracks]);
 
-  
   const formatTime = (time: number) => {
     if (isNaN(time)) return '0:00';
     const minutes = Math.floor(time / 60);
@@ -50,7 +56,6 @@ export default function PlayerBar() {
     return `${minutes}:${seconds < 10 ? '0' + seconds : seconds}`;
   };
 
- 
   const handleTimeUpdate = () => {
     if (audioRef.current) {
       setCurrentTime(audioRef.current.currentTime);
@@ -58,7 +63,6 @@ export default function PlayerBar() {
     }
   };
 
-  
   const handleProgressChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (audioRef.current) {
       audioRef.current.currentTime = Number(e.target.value);
@@ -66,7 +70,6 @@ export default function PlayerBar() {
     }
   };
 
- 
   const getRandomTrack = () => {
     if (!currentTrack) return tracks[0];
     const otherTracks = tracks.filter(t => t.id !== currentTrack.id);
@@ -74,9 +77,9 @@ export default function PlayerBar() {
     return otherTracks[randomIndex];
   };
 
-  
   const nextTrack = () => {
     if (!currentTrack) return;
+    if (isLastTrack()) return;
 
     if (isShuffle) {
       const randomTrack = getRandomTrack();
@@ -85,23 +88,21 @@ export default function PlayerBar() {
     } else {
       const currentIndex = tracks.findIndex((t) => t.id === currentTrack.id);
       if (currentIndex === -1) return;
-      const nextIndex = (currentIndex + 1) % tracks.length;
-      dispatch(setCurrentTrack(tracks[nextIndex]));
+      dispatch(setCurrentTrack(tracks[currentIndex + 1]));
       dispatch(setIsPlaying(true));
     }
   };
 
-  
   const prevTrack = () => {
     if (!currentTrack) return;
+    if (isFirstTrack()) return;
+
     const currentIndex = tracks.findIndex((t) => t.id === currentTrack.id);
     if (currentIndex === -1) return;
-    const prevIndex = (currentIndex - 1 + tracks.length) % tracks.length;
-    dispatch(setCurrentTrack(tracks[prevIndex]));
+    dispatch(setCurrentTrack(tracks[currentIndex - 1]));
     dispatch(setIsPlaying(true));
   };
 
-  
   useEffect(() => {
     if (currentTrack && audioRef.current) {
       audioRef.current.src = currentTrack.track_file;
@@ -109,10 +110,10 @@ export default function PlayerBar() {
       dispatch(setIsPlaying(true));
       setCurrentTime(0);
       setDuration(0);
+      setAudioError(false);
     }
   }, [currentTrack, dispatch]);
 
-  
   useEffect(() => {
     if (audioRef.current) {
       if (isPlaying) {
@@ -123,14 +124,21 @@ export default function PlayerBar() {
     }
   }, [isPlaying]);
 
- 
   useEffect(() => {
     if (audioRef.current) {
       audioRef.current.volume = volume / 100;
     }
   }, [volume]);
 
-  
+  const handleAudioError = () => {
+    setAudioError(true);
+    setTimeout(() => setAudioError(false), 3000);
+  };
+
+  const handleAudioLoadStart = () => {
+    setAudioError(false);
+  };
+
   const handleEnded = () => {
     if (isRepeat) {
       if (audioRef.current) {
@@ -143,7 +151,6 @@ export default function PlayerBar() {
     }
   };
 
-  
   if (!currentTrack) {
     return (
       <div className={styles.bar}>
@@ -233,14 +240,19 @@ export default function PlayerBar() {
     );
   }
 
-  
+  const progressPercent = duration > 0 ? (currentTime / duration) * 100 : 0;
+
   return (
     <div className={styles.bar}>
       <div className={styles.bar__content}>
-        {}
+        {audioError && (
+          <div className={styles.errorToast}>
+            ⚠️ Ошибка загрузки трека. Проверьте файл или путь.
+          </div>
+        )}
+
         <div className={styles.bar__playerProgress}></div>
 
-        {}
         <div className={styles.bar__progressWrapper}>
           <input
             type="range"
@@ -249,6 +261,7 @@ export default function PlayerBar() {
             value={currentTime}
             onChange={handleProgressChange}
             className={styles.progressLine}
+            style={{ '--progress-percent': `${progressPercent}%` } as React.CSSProperties}
           />
           <div className={styles.timeInfo}>
             <span>{formatTime(currentTime)}</span>
@@ -259,20 +272,25 @@ export default function PlayerBar() {
         <div className={styles.bar__playerBlock}>
           <div className={styles.bar__player}>
             <div className={styles.player__controls}>
-              <div className={styles.player__btnPrev} onClick={prevTrack}>
+              <div
+                className={`${styles.player__btnPrev} ${isFirstTrack() ? styles.disabled : ''}`}
+                onClick={!isFirstTrack() ? prevTrack : undefined}
+              >
                 <svg className={styles.player__btnPrevSvg}>
                   <use xlinkHref="/img/icon/sprite.svg#icon-prev"></use>
                 </svg>
               </div>
 
-              {}
               <div className={styles.player__btnPlay} onClick={() => dispatch(setIsPlaying(!isPlaying))}>
                 <svg className={styles.player__btnPlaySvg}>
                   <use xlinkHref={`/img/icon/sprite.svg#icon-${isPlaying ? 'pause' : 'play'}`}></use>
                 </svg>
               </div>
 
-              <div className={styles.player__btnNext} onClick={nextTrack}>
+              <div
+                className={`${styles.player__btnNext} ${isLastTrack() ? styles.disabled : ''}`}
+                onClick={!isLastTrack() ? nextTrack : undefined}
+              >
                 <svg className={styles.player__btnNextSvg}>
                   <use xlinkHref="/img/icon/sprite.svg#icon-next"></use>
                 </svg>
@@ -315,7 +333,6 @@ export default function PlayerBar() {
               </div>
 
               <div className={styles.trackPlay__likeDis}>
-                {}
                 <div
                   className={`${styles.trackPlay__like} ${isLiked ? styles.active : ''}`}
                   onClick={() => dispatch(toggleLike(currentTrack.id))}
@@ -361,6 +378,8 @@ export default function PlayerBar() {
         onEnded={handleEnded}
         onTimeUpdate={handleTimeUpdate}
         onLoadedMetadata={handleTimeUpdate}
+        onError={handleAudioError}
+        onLoadStart={handleAudioLoadStart}
       />
     </div>
   );

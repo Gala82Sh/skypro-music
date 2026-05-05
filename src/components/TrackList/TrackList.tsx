@@ -1,9 +1,13 @@
 import React from 'react';
 import styles from './TrackList.module.css';
 import TrackItem from '../TrackItem/TrackItem';
-import { tracks } from '../../data/tracks';
+import { Track } from '../../data/tracks';
 
-export default function TrackList() {
+interface TrackListProps {
+  tracks: Track[];
+}
+
+export default function TrackList({ tracks }: TrackListProps) {
   return (
     <div className={styles.content__playlist}>
       {tracks.map((track) => (
