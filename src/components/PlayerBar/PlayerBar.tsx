@@ -104,15 +104,16 @@ export default function PlayerBar() {
   };
 
   useEffect(() => {
-    if (currentTrack && audioRef.current) {
-      audioRef.current.src = currentTrack.track_file;
-      audioRef.current.play();
-      dispatch(setIsPlaying(true));
-      setCurrentTime(0);
-      setDuration(0);
-      setAudioError(false);
-    }
-  }, [currentTrack, dispatch]);
+  if (currentTrack && audioRef.current) {
+    audioRef.current.src = currentTrack.track_file;
+    audioRef.current.play().catch((e) => {
+      if (e.name !== 'AbortError') {
+        console.warn('Play error:', e);
+      }
+    });
+    dispatch(setIsPlaying(true));
+  }
+}, [currentTrack, dispatch]);
 
   useEffect(() => {
     if (audioRef.current) {

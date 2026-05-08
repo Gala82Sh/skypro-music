@@ -16,10 +16,10 @@ export default function Sidebar() {
       <div className={styles.sidebar__block}>
         <div className={styles.sidebar__list}>
           <div className={styles.sidebar__item}>
-            <Link href="/playlist/1" className={styles.sidebar__link}>
+            <Link href="/selection/2" className={styles.sidebar__link}>
               <Image
                 src="/img/playlist01.png"
-                alt="day's playlist"
+                alt="Плейлист дня"
                 width={250}
                 height={170}
                 loading="eager"
@@ -27,20 +27,20 @@ export default function Sidebar() {
             </Link>
           </div>
           <div className={styles.sidebar__item}>
-            <Link href="/playlist/2" className={styles.sidebar__link}>
+            <Link href="/selection/3" className={styles.sidebar__link}>
               <Image
                 src="/img/playlist02.png"
-                alt="day's playlist"
+                alt="Танцевальные хиты"
                 width={250}
                 height={170}
               />
             </Link>
           </div>
           <div className={styles.sidebar__item}>
-            <Link href="/playlist/3" className={styles.sidebar__link}>
+            <Link href="/selection/4" className={styles.sidebar__link}>
               <Image
                 src="/img/playlist03.png"
-                alt="day's playlist"
+                alt="Инди-заряд"
                 width={250}
                 height={170}
               />

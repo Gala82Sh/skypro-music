@@ -106,12 +106,17 @@
   border-radius: 8px;
 }
 
+.active {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+}
+
 .pulseDot {
-  width: 16px;
-  height: 16px;
-  background-color: #B672FF;
+  width: 12px;
+  height: 12px;
+  background: #B672FF;
   border-radius: 50%;
-  animation: pulse 1.5s ease-in-out infinite;
+  animation: pulse 1.5s infinite;
 }
 
 @keyframes pulse {

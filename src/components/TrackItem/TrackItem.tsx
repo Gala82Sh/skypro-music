@@ -32,7 +32,6 @@ export default function TrackItem({
   const dispatch = useAppDispatch();
   const { currentTrack, isPlaying } = useAppSelector((state) => state.tracks);
 
- 
   const trackData = {
     id,
     title,
@@ -44,7 +43,8 @@ export default function TrackItem({
     track_file: trackFile,
   };
 
-  const isCurrentPlaying = currentTrack?.id === id && isPlaying;
+  const isActiveTrack = currentTrack?.id === id;
+  const isPlayingNow = isActiveTrack && isPlaying;
 
   const handleTrackClick = () => {
     console.log('🖱️ Клик по треку:', trackData);
@@ -54,13 +54,13 @@ export default function TrackItem({
 
   return (
     <div
-      className={`${styles.playlist__item} ${isCurrentPlaying ? styles.playing : ''}`}
+      className={`${styles.playlist__item} ${isActiveTrack ? styles.active : ''}`}
       onClick={handleTrackClick}
     >
       <div className={styles.playlist__track}>
         <div className={styles.track__title}>
           <div className={styles.track__titleImage}>
-            {isCurrentPlaying ? (
+            {isPlayingNow ? (
               <div className={styles.pulseDot} />
             ) : (
               <svg className={styles.track__titleSvg}>

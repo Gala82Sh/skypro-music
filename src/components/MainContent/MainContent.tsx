@@ -1,28 +1,87 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import styles from './MainContent.module.css';
 import TrackList from '../TrackList/TrackList';
-import { tracks } from '../../data/tracks';
+import { tracksApi as tracks } from '../../data/tracks-api';
+
+type SortType = 'default' | 'oldFirst' | 'newFirst';
 
 export default function MainContent() {
   const [activeFilter, setActiveFilter] = useState<'author' | 'year' | 'genre' | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
+  const [filterPosition, setFilterPosition] = useState<{ top: number; left: number } | null>(null);
+
+  const [selectedAuthors, setSelectedAuthors] = useState<string[]>([]);
+  const [selectedGenres, setSelectedGenres] = useState<string[]>([]);
+  const [sortBy, setSortBy] = useState<SortType>('default');
+
+  const authorButtonRef = useRef<HTMLButtonElement>(null);
+  const yearButtonRef = useRef<HTMLButtonElement>(null);
+  const genreButtonRef = useRef<HTMLButtonElement>(null);
 
   const uniqueAuthors = [...new Set(tracks.map((track) => track.author))];
   const uniqueGenres = [...new Set(tracks.map((track) => track.genre))];
   const uniqueYears = [...new Set(tracks.map((track) => track.year))].sort((a, b) => a - b);
 
   const toggleFilter = (filter: 'author' | 'year' | 'genre') => {
-    setActiveFilter((prev) => (prev === filter ? null : filter));
+    if (activeFilter === filter) {
+      setActiveFilter(null);
+      setFilterPosition(null);
+      return;
+    }
+
+    let button: HTMLButtonElement | null = null;
+    if (filter === 'author') button = authorButtonRef.current;
+    if (filter === 'year') button = yearButtonRef.current;
+    if (filter === 'genre') button = genreButtonRef.current;
+
+    if (button) {
+      const rect = button.getBoundingClientRect();
+      setFilterPosition({
+        top: rect.bottom + window.scrollY + 8,
+        left: rect.left + window.scrollX,
+      });
+    }
+
+    setActiveFilter(filter);
   };
 
-  
-  const filteredTracks = tracks.filter((track) =>
-    track.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    track.author.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    track.album.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  const toggleAuthor = (author: string) => {
+    setSelectedAuthors((prev) =>
+      prev.includes(author) ? prev.filter((a) => a !== author) : [...prev, author]
+    );
+  };
+
+  const toggleGenre = (genre: string) => {
+    setSelectedGenres((prev) =>
+      prev.includes(genre) ? prev.filter((g) => g !== genre) : [...prev, genre]
+    );
+  };
+
+  const filteredTracks = (() => {
+    let result = tracks.filter((track) =>
+      track.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      track.author.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      track.album.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+
+    if (selectedAuthors.length > 0) {
+      result = result.filter((track) => selectedAuthors.includes(track.author));
+    }
+
+    if (selectedGenres.length > 0) {
+      result = result.filter((track) => selectedGenres.includes(track.genre));
+    }
+
+    if (sortBy === 'oldFirst') {
+      result = [...result].sort((a, b) => a.year - b.year);
+    } else if (sortBy === 'newFirst') {
+      result = [...result].sort((a, b) => b.year - a.year);
+    }
+
+    return result;
+  })();
 
   return (
     <div className={styles.centerblock}>
@@ -43,53 +102,130 @@ export default function MainContent() {
       <div className={styles.centerblock__filter}>
         <div className={styles.filter__title}>Искать по:</div>
         <button
+          ref={authorButtonRef}
           className={`${styles.filter__button} ${activeFilter === 'author' ? styles.active : ''}`}
           onClick={() => toggleFilter('author')}
         >
           исполнителю
+          {selectedAuthors.length > 0 && (
+            <span className={styles.filterBadge}>{selectedAuthors.length}</span>
+          )}
         </button>
         <button
+          ref={yearButtonRef}
           className={`${styles.filter__button} ${activeFilter === 'year' ? styles.active : ''}`}
           onClick={() => toggleFilter('year')}
         >
           году выпуска
+          {sortBy !== 'default' && (
+            <span className={styles.filterBadge}>1</span>
+          )}
         </button>
         <button
+          ref={genreButtonRef}
           className={`${styles.filter__button} ${activeFilter === 'genre' ? styles.active : ''}`}
           onClick={() => toggleFilter('genre')}
         >
           жанру
+          {selectedGenres.length > 0 && (
+            <span className={styles.filterBadge}>{selectedGenres.length}</span>
+          )}
         </button>
       </div>
 
-      {}
-      {activeFilter === 'author' && (
-        <div className={styles.filter__list}>
-          {uniqueAuthors.map((author) => (
-            <div key={author} className={styles.filter__item}>
-              {author}
+      {activeFilter === 'author' && filterPosition && (
+        <div
+          className={styles.filter__list}
+          style={{
+            position: 'fixed',
+            top: filterPosition.top,
+            left: filterPosition.left,
+          }}
+        >
+          <div className={styles.filter__inner}>
+            <div className={styles.filter__listContainer}>
+              {uniqueAuthors.map((author) => (
+                <div
+                  key={author}
+                  className={`${styles.filter__item} ${selectedAuthors.includes(author) ? styles.active : ''}`}
+                  onClick={() => toggleAuthor(author)}
+                >
+                  {author}
+                </div>
+              ))}
             </div>
-          ))}
+          </div>
         </div>
       )}
 
-      {activeFilter === 'year' && (
-        <div className={styles.filter__list}>
-          {uniqueYears.map((year) => (
-            <div key={year} className={styles.filter__item}>
-              {year}
+      {activeFilter === 'year' && filterPosition && (
+        <div
+          className={styles.filter__list}
+          style={{
+            position: 'fixed',
+            top: filterPosition.top,
+            left: filterPosition.left,
+          }}
+        >
+          <div className={styles.filter__inner}>
+            <div className={styles.filter__listContainer}>
+              <div
+                className={`${styles.filter__item} ${sortBy === 'default' ? styles.active : ''}`}
+                onClick={() => {
+                  setSortBy('default');
+                  setActiveFilter(null);
+                  setFilterPosition(null);
+                }}
+              >
+                По умолчанию
+              </div>
+              <div
+                className={`${styles.filter__item} ${sortBy === 'oldFirst' ? styles.active : ''}`}
+                onClick={() => {
+                  setSortBy('oldFirst');
+                  setActiveFilter(null);
+                  setFilterPosition(null);
+                }}
+              >
+                Сначала старые
+              </div>
+              <div
+                className={`${styles.filter__item} ${sortBy === 'newFirst' ? styles.active : ''}`}
+                onClick={() => {
+                  setSortBy('newFirst');
+                  setActiveFilter(null);
+                  setFilterPosition(null);
+                }}
+              >
+                Сначала новые
+              </div>
             </div>
-          ))}
+          </div>
         </div>
       )}
 
-      {activeFilter === 'genre' && (
-        <div className={styles.filter__list}>
-          {uniqueGenres.map((genre) => (
-            <div key={genre} className={styles.filter__item}>
-              {genre}
+      {activeFilter === 'genre' && filterPosition && (
+        <div
+          className={styles.filter__list}
+          style={{
+            position: 'fixed',
+            top: filterPosition.top,
+            left: filterPosition.left,
+          }}
+        >
+          <div className={styles.filter__inner}>
+            <div className={styles.filter__listContainer}>
+              {uniqueGenres.map((genre) => (
+                <div
+                  key={genre}
+                  className={`${styles.filter__item} ${selectedGenres.includes(genre) ? styles.active : ''}`}
+                  onClick={() => toggleGenre(genre)}
+                >
+                  {genre}
+                </div>
+              ))}
             </div>
-          ))}
+          </div>
         </div>
       )}
 
