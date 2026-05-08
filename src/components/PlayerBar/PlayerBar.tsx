@@ -8,16 +8,18 @@ import {
   setCurrentTrack,
   toggleRepeat,
   toggleShuffle,
-  toggleLike,
-  setLikedTracks
+  likeTrack,
+  unlikeTrack,
 } from '@/store/features/trackSlice';
 import { tracks } from '@/data/tracks';
+import Toast from '../Toast/Toast';
 import styles from './PlayerBar.module.css';
 
 export default function PlayerBar() {
   const dispatch = useAppDispatch();
   const { currentTrack, isPlaying, isRepeat, isShuffle, likedTracks } = useAppSelector((state) => state.tracks);
   const audioRef = useRef<HTMLAudioElement | null>(null);
+  const [toastMessage, setToastMessage] = useState<string | null>(null);
 
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
@@ -37,17 +39,6 @@ export default function PlayerBar() {
     const currentIndex = tracks.findIndex((t) => t.id === currentTrack.id);
     return currentIndex === tracks.length - 1;
   };
-
-  useEffect(() => {
-    const savedLikes = localStorage.getItem('likedTracks');
-    if (savedLikes) {
-      dispatch(setLikedTracks(JSON.parse(savedLikes)));
-    }
-  }, [dispatch]);
-
-  useEffect(() => {
-    localStorage.setItem('likedTracks', JSON.stringify(likedTracks));
-  }, [likedTracks]);
 
   const formatTime = (time: number) => {
     if (isNaN(time)) return '0:00';
@@ -104,16 +95,16 @@ export default function PlayerBar() {
   };
 
   useEffect(() => {
-  if (currentTrack && audioRef.current) {
-    audioRef.current.src = currentTrack.track_file;
-    audioRef.current.play().catch((e) => {
-      if (e.name !== 'AbortError') {
-        console.warn('Play error:', e);
-      }
-    });
-    dispatch(setIsPlaying(true));
-  }
-}, [currentTrack, dispatch]);
+    if (currentTrack && audioRef.current) {
+      audioRef.current.src = currentTrack.track_file;
+      audioRef.current.play().catch((e) => {
+        if (e.name !== 'AbortError') {
+          console.warn('Play error:', e);
+        }
+      });
+      dispatch(setIsPlaying(true));
+    }
+  }, [currentTrack, dispatch]);
 
   useEffect(() => {
     if (audioRef.current) {
@@ -149,6 +140,25 @@ export default function PlayerBar() {
       }
     } else {
       nextTrack();
+    }
+  };
+
+  const handleLike = async (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (!currentTrack) return;
+    
+    try {
+      if (isLiked) {
+        await dispatch(unlikeTrack(currentTrack.id)).unwrap();
+        setToastMessage('Лайк удалён');
+      } else {
+        await dispatch(likeTrack(currentTrack.id)).unwrap();
+        setToastMessage('Добавлено в избранное');
+      }
+      setTimeout(() => setToastMessage(null), 3000);
+    } catch (error) {
+      setToastMessage('Ошибка. Попробуйте позже');
+      setTimeout(() => setToastMessage(null), 3000);
     }
   };
 
@@ -336,7 +346,7 @@ export default function PlayerBar() {
               <div className={styles.trackPlay__likeDis}>
                 <div
                   className={`${styles.trackPlay__like} ${isLiked ? styles.active : ''}`}
-                  onClick={() => dispatch(toggleLike(currentTrack.id))}
+                  onClick={handleLike}
                   style={{ cursor: 'pointer' }}
                 >
                   <svg className={styles.trackPlay__likeSvg}>
@@ -382,6 +392,14 @@ export default function PlayerBar() {
         onError={handleAudioError}
         onLoadStart={handleAudioLoadStart}
       />
+      
+      {toastMessage && (
+        <Toast 
+          message={toastMessage} 
+          type={toastMessage.includes('Ошибка') ? 'error' : 'success'} 
+          onClose={() => setToastMessage(null)} 
+        />
+      )}
     </div>
   );
 }

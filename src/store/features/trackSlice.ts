@@ -1,6 +1,8 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import { Track } from '@/data/tracks';
 import { get } from '@/api/config';
+import { getFavoriteTracks, addTrackToFavorite, removeTrackFromFavorite } from '@/api/trackApi';
+import { withReauth } from '@/utils/withReauth';
 
 type initialStateType = {
   currentTrack: Track | null;
@@ -47,6 +49,64 @@ export const fetchTracks = createAsyncThunk(
   }
 );
 
+
+export const fetchLikedTracks = createAsyncThunk(
+  'tracks/fetchLikedTracks',
+  async (_, { rejectWithValue, getState }) => {
+    try {
+      const state = getState() as any;
+      const refreshToken = state.auth.refreshToken;
+      
+      const likedIds = await withReauth(
+        (token) => getFavoriteTracks(token),
+        refreshToken
+      );
+      return likedIds;
+    } catch (err) {
+      return rejectWithValue(err instanceof Error ? err.message : 'Ошибка загрузки избранного');
+    }
+  }
+);
+
+
+export const likeTrack = createAsyncThunk(
+  'tracks/likeTrack',
+  async (trackId: number, { rejectWithValue, getState }) => {
+    try {
+      const state = getState() as any;
+      const refreshToken = state.auth.refreshToken;
+      
+      await withReauth(
+        (token) => addTrackToFavorite(trackId, token),
+        refreshToken
+      );
+      
+      return trackId;
+    } catch (err) {
+      return rejectWithValue(err instanceof Error ? err.message : 'Ошибка при добавлении лайка');
+    }
+  }
+);
+
+export const unlikeTrack = createAsyncThunk(
+  'tracks/unlikeTrack',
+  async (trackId: number, { rejectWithValue, getState }) => {
+    try {
+      const state = getState() as any;
+      const refreshToken = state.auth.refreshToken;
+      
+      await withReauth(
+        (token) => removeTrackFromFavorite(trackId, token),
+        refreshToken
+      );
+      
+      return trackId;
+    } catch (err) {
+      return rejectWithValue(err instanceof Error ? err.message : 'Ошибка при удалении лайка');
+    }
+  }
+);
+
 const trackSlice = createSlice({
   name: 'tracks',
   initialState,
@@ -78,7 +138,7 @@ const trackSlice = createSlice({
     setShuffle: (state, action: PayloadAction<boolean>) => {
       state.isShuffle = action.payload;
     },
-    toggleLike: (state, action: PayloadAction<number>) => {
+    toggleLikeLocal: (state, action: PayloadAction<number>) => {
       const id = action.payload;
       if (state.likedTracks.includes(id)) {
         state.likedTracks = state.likedTracks.filter(trackId => trackId !== id);
@@ -92,6 +152,7 @@ const trackSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
+      
       .addCase(fetchTracks.pending, (state) => {
         state.isLoading = true;
         state.error = null;
@@ -103,6 +164,25 @@ const trackSlice = createSlice({
       .addCase(fetchTracks.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.payload as string;
+      })
+      
+      .addCase(fetchLikedTracks.fulfilled, (state, action) => {
+        state.likedTracks = action.payload;
+      })
+      .addCase(fetchLikedTracks.rejected, (state, action) => {
+        console.error('Ошибка загрузки избранного:', action.payload);
+      })
+      
+      .addCase(likeTrack.fulfilled, (state, action) => {
+        const trackId = action.payload;
+        if (!state.likedTracks.includes(trackId)) {
+          state.likedTracks.push(trackId);
+        }
+      })
+      
+      .addCase(unlikeTrack.fulfilled, (state, action) => {
+        const trackId = action.payload;
+        state.likedTracks = state.likedTracks.filter(id => id !== trackId);
       });
   },
 });
@@ -117,7 +197,7 @@ export const {
   setRepeat,
   toggleShuffle,
   setShuffle,
-  toggleLike,
+  toggleLikeLocal,
   setLikedTracks,
 } = trackSlice.actions;
 

@@ -1,18 +1,36 @@
+'use client';
+
 import Image from 'next/image';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { useAppDispatch } from '@/store/store';
+import { logout } from '@/store/features/authSlice';
 import styles from './Sidebar.module.css';
 
+
 export default function Sidebar() {
+  const dispatch = useAppDispatch();
+
+  const handleLogout = () => {
+  dispatch(logout());
+  window.location.replace('/auth/login');
+};
+
   return (
     <div className={styles.main__sidebar}>
       <div className={styles.sidebar__personal}>
-        <p className={styles.sidebar__personalName}>Sergey.Ivanov</p>
-        <div className={styles.sidebar__icon}>
-          <svg>
-            <use xlinkHref="/img/icon/sprite.svg#logout"></use>
-          </svg>
-        </div>
-      </div>
+  <p className={styles.sidebar__personalName}>Sergey.Ivanov</p>
+  <button 
+    onClick={handleLogout} 
+    className={styles.sidebar__icon}
+    style={{ cursor: 'pointer', background: 'none', border: 'none' }}
+    aria-label="Выйти"
+  >
+    <svg>
+      <use xlinkHref="/img/icon/sprite.svg#logout"></use>
+    </svg>
+  </button>
+</div>
       <div className={styles.sidebar__block}>
         <div className={styles.sidebar__list}>
           <div className={styles.sidebar__item}>

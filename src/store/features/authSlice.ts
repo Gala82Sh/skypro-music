@@ -92,13 +92,13 @@ const authSlice = createSlice({
   initialState,
   reducers: {
     logout: (state) => {
-      state.accessToken = null;
-      state.refreshToken = null;
-      state.user = null;
-      state.error = null;
-      localStorage.removeItem('accessToken');
-      localStorage.removeItem('refreshToken');
-    },
+  state.accessToken = null;
+  state.refreshToken = null;
+  state.user = null;
+  state.error = null;
+  localStorage.removeItem('accessToken');
+  localStorage.removeItem('refreshToken');
+},
     clearError: (state) => {
       state.error = null;
     },

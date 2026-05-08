@@ -4,10 +4,15 @@ import { useState, useRef, useEffect } from 'react';
 import styles from './MainContent.module.css';
 import TrackList from '../TrackList/TrackList';
 import { tracksApi as tracks } from '../../data/tracks-api';
+import { useAppDispatch, useAppSelector } from '@/store/store';
+import { fetchTracks, fetchLikedTracks } from '@/store/features/trackSlice';
 
 type SortType = 'default' | 'oldFirst' | 'newFirst';
 
 export default function MainContent() {
+  const dispatch = useAppDispatch();
+  const { accessToken } = useAppSelector((state) => state.auth);
+
   const [activeFilter, setActiveFilter] = useState<'author' | 'year' | 'genre' | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [filterPosition, setFilterPosition] = useState<{ top: number; left: number } | null>(null);
@@ -19,6 +24,13 @@ export default function MainContent() {
   const authorButtonRef = useRef<HTMLButtonElement>(null);
   const yearButtonRef = useRef<HTMLButtonElement>(null);
   const genreButtonRef = useRef<HTMLButtonElement>(null);
+
+  useEffect(() => {
+    dispatch(fetchTracks());
+    if (accessToken) {
+      dispatch(fetchLikedTracks());
+    }
+  }, [dispatch, accessToken]);
 
   const uniqueAuthors = [...new Set(tracks.map((track) => track.author))];
   const uniqueGenres = [...new Set(tracks.map((track) => track.genre))];

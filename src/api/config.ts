@@ -51,3 +51,15 @@ export async function getWithAuth<T>(endpoint: string): Promise<T> {
   });
   return handleResponse<T>(response);
 }
+
+export async function deleteWithAuth<T>(endpoint: string): Promise<T> {
+  const token = localStorage.getItem('accessToken');
+  const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+    method: 'DELETE',
+    headers: {
+      'Authorization': `Bearer ${token}`,
+    },
+  });
+  return handleResponse<T>(response);
+}
+

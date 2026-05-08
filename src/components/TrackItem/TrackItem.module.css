@@ -116,6 +116,9 @@
   height: 12px;
   background: #B672FF;
   border-radius: 50%;
+}
+
+.pulseDot.playing {
   animation: pulse 1.5s infinite;
 }
 
@@ -128,4 +131,24 @@
     opacity: 1;
     transform: scale(1.2);
   }
+}
+
+
+.likeButton {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  transition: transform 0.1s ease;
+}
+
+.likeButton:hover {
+  transform: scale(1.1);
+}
+
+.liked svg {
+  fill: #B672FF;
+  stroke: #B672FF;
 }
