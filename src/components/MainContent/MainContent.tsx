@@ -6,8 +6,8 @@ import TrackList from '../TrackList/TrackList';
 import { tracksApi as tracks } from '../../data/tracks-api';
 import { useAppDispatch, useAppSelector } from '@/store/store';
 import { fetchTracks, fetchLikedTracks } from '@/store/features/trackSlice';
+import { filterTracks, SortType } from '@/utils/filterTracks';
 
-type SortType = 'default' | 'oldFirst' | 'newFirst';
 
 export default function MainContent() {
   const dispatch = useAppDispatch();
@@ -71,29 +71,12 @@ export default function MainContent() {
     );
   };
 
-  const filteredTracks = (() => {
-    let result = tracks.filter((track) =>
-      track.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      track.author.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      track.album.toLowerCase().includes(searchQuery.toLowerCase())
-    );
-
-    if (selectedAuthors.length > 0) {
-      result = result.filter((track) => selectedAuthors.includes(track.author));
-    }
-
-    if (selectedGenres.length > 0) {
-      result = result.filter((track) => selectedGenres.includes(track.genre));
-    }
-
-    if (sortBy === 'oldFirst') {
-      result = [...result].sort((a, b) => a.year - b.year);
-    } else if (sortBy === 'newFirst') {
-      result = [...result].sort((a, b) => b.year - a.year);
-    }
-
-    return result;
-  })();
+  const filteredTracks = filterTracks(tracks, {
+  searchQuery,
+  selectedAuthors,
+  selectedGenres,
+  sortBy,
+});
 
   return (
     <div className={styles.centerblock}>

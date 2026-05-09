@@ -15,3 +15,10 @@
 .content__playlist::-webkit-scrollbar {
   display: none; 
 }
+
+.noTracks {
+  text-align: center;
+  color: #b3b3b3;
+  padding: 40px;
+  font-size: 18px;
+}

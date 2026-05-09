@@ -8,6 +8,11 @@ interface TrackListProps {
 }
 
 export default function TrackList({ tracks }: TrackListProps) {
+
+  if (tracks.length === 0) {
+    return <div className={styles.noTracks}>Нет подходящих треков</div>;
+  }
+
   return (
     <div className={styles.content__playlist}>
       {tracks.map((track) => (
