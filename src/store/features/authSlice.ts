@@ -1,7 +1,6 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import { post } from '@/api/config';
 
-
 interface AuthState {
   accessToken: string | null;
   refreshToken: string | null;
@@ -32,14 +31,35 @@ interface UserData {
   _id: number;
 }
 
+
+const loadTokens = () => {
+  if (typeof window !== 'undefined') {
+    return {
+      accessToken: localStorage.getItem('accessToken'),
+      refreshToken: localStorage.getItem('refreshToken'),
+    };
+  }
+  return { accessToken: null, refreshToken: null };
+};
+
+
+const loadUser = () => {
+  if (typeof window !== 'undefined') {
+    const storedUser = localStorage.getItem('user');
+    return storedUser ? JSON.parse(storedUser) : null;
+  }
+  return null;
+};
+
+const { accessToken, refreshToken } = loadTokens();
+
 const initialState: AuthState = {
-  accessToken: null,
-  refreshToken: null,
-  user: null,
+  accessToken,
+  refreshToken,
+  user: loadUser(),
   isLoading: false,
   error: null,
 };
-
 
 export const registerUser = createAsyncThunk(
   'auth/register',
@@ -55,7 +75,6 @@ export const registerUser = createAsyncThunk(
     }
   }
 );
-
 
 export const loginUser = createAsyncThunk(
   'auth/login',
@@ -73,7 +92,6 @@ export const loginUser = createAsyncThunk(
   }
 );
 
-
 export const refreshAccessToken = createAsyncThunk(
   'auth/refresh',
   async (refreshToken: string, { rejectWithValue }) => {
@@ -86,26 +104,25 @@ export const refreshAccessToken = createAsyncThunk(
   }
 );
 
-
 const authSlice = createSlice({
   name: 'auth',
   initialState,
   reducers: {
     logout: (state) => {
-  state.accessToken = null;
-  state.refreshToken = null;
-  state.user = null;
-  state.error = null;
-  localStorage.removeItem('accessToken');
-  localStorage.removeItem('refreshToken');
-},
+      state.accessToken = null;
+      state.refreshToken = null;
+      state.user = null;
+      state.error = null;
+      localStorage.removeItem('accessToken');
+      localStorage.removeItem('refreshToken');
+      localStorage.removeItem('user');
+    },
     clearError: (state) => {
       state.error = null;
     },
   },
   extraReducers: (builder) => {
     builder
-     
       .addCase(registerUser.pending, (state) => {
         state.isLoading = true;
         state.error = null;
@@ -118,7 +135,6 @@ const authSlice = createSlice({
         state.isLoading = false;
         state.error = action.payload as string;
       })
-     
       .addCase(loginUser.pending, (state) => {
         state.isLoading = true;
         state.error = null;
@@ -134,12 +150,12 @@ const authSlice = createSlice({
         };
         localStorage.setItem('accessToken', action.payload.tokens.access);
         localStorage.setItem('refreshToken', action.payload.tokens.refresh);
+        localStorage.setItem('user', JSON.stringify(state.user));
       })
       .addCase(loginUser.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.payload as string;
       })
-      
       .addCase(refreshAccessToken.fulfilled, (state, action) => {
         state.accessToken = action.payload.accessToken;
         localStorage.setItem('accessToken', action.payload.accessToken);

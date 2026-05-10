@@ -8,7 +8,7 @@
 
 .modal {
   width: 366px;
-  height: 439px;
+   min-height: 439px;
   background: #ffffff;
   border-radius: 12px;
   display: flex;
@@ -130,3 +130,17 @@
   text-align: center;
 }
 
+
+.link {
+  text-align: center;
+  margin-top: 20px;
+}
+
+.link a {
+  color: #b672ff;
+  text-decoration: none;
+}
+
+.link a:hover {
+  text-decoration: underline;
+}

@@ -72,6 +72,9 @@ export default function TrackItem({
     }
   };
 
+  
+  const shouldUseLink = href && href !== '/';
+
   return (
     <>
       <div
@@ -90,16 +93,30 @@ export default function TrackItem({
               )}
             </div>
             <div className={styles.track__titleText}>
-              <Link href={href} className={styles.track__titleLink}>
-                {title} <span className={styles.track__titleSpan}></span>
-              </Link>
+              {shouldUseLink ? (
+                <Link href={href} className={styles.track__titleLink}>
+                  {title} <span className={styles.track__titleSpan}></span>
+                </Link>
+              ) : (
+                <div className={styles.track__titleLink}>
+                  {title} <span className={styles.track__titleSpan}></span>
+                </div>
+              )}
             </div>
           </div>
           <div className={styles.track__author}>
-            <Link href={href} className={styles.track__authorLink}>{author}</Link>
+            {shouldUseLink ? (
+              <Link href={href} className={styles.track__authorLink}>{author}</Link>
+            ) : (
+              <div className={styles.track__authorLink}>{author}</div>
+            )}
           </div>
           <div className={styles.track__album}>
-            <Link href={href} className={styles.track__albumLink}>{album}</Link>
+            {shouldUseLink ? (
+              <Link href={href} className={styles.track__albumLink}>{album}</Link>
+            ) : (
+              <div className={styles.track__albumLink}>{album}</div>
+            )}
           </div>
           <div className={styles.track__time}>
             <button

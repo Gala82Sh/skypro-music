@@ -31,7 +31,7 @@ export default function AuthForm({ type }: AuthFormProps) {
                 router.push('/');
             }
         } else {
-            
+
             if (password.length < 6) {
                 alert('Пароль должен содержать не менее 6 символов');
                 return;
@@ -41,7 +41,7 @@ export default function AuthForm({ type }: AuthFormProps) {
                 return;
             }
 
-            
+
             const username = email.split('@')[0];
 
             const result = await dispatch(registerUser({ email, password, username }));
@@ -51,7 +51,7 @@ export default function AuthForm({ type }: AuthFormProps) {
         }
     };
 
-    
+
     if (type === 'login') {
         return (
             <div className={styles.container}>
@@ -100,7 +100,7 @@ export default function AuthForm({ type }: AuthFormProps) {
         );
     }
 
-    
+
     return (
         <div className={styles.container}>
             <div className={styles.modal}>
@@ -147,8 +147,13 @@ export default function AuthForm({ type }: AuthFormProps) {
                     <button type="submit" className={styles.button} disabled={isLoading}>
                         Зарегистрироваться
                     </button>
+
+                    <div className={styles.link}>
+                        <Link href="/auth/login">Уже есть аккаунт? Войти</Link>
+                    </div>
                 </form>
             </div>
         </div>
     );
+
 }

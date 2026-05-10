@@ -2,9 +2,9 @@
 
 import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
-import styles from './page.module.css';
 import TrackList from '@/components/TrackList/TrackList';
 import { getSelectionById, getTracksByIds, TrackItem } from '@/api/selectionApi';
+import styles from './page.module.css';
 
 interface Track {
   id: number;
@@ -31,22 +31,14 @@ export default function SelectionPage() {
       setIsLoading(true);
       setError(null);
       try {
-       
         const selection = await getSelectionById(id as string);
-        
-        
         if (!selection) {
           setError('Подборка не найдена');
           setIsLoading(false);
           return;
         }
-        
         setSelectionName(selection.name || 'Подборка');
-
-        
         const trackItems = await getTracksByIds(selection.items || []);
-        
-        
         const formattedTracks: Track[] = trackItems.map((item: TrackItem) => ({
           id: item._id,
           title: item.name || 'Без названия',
@@ -57,16 +49,13 @@ export default function SelectionPage() {
           year: item.releaseDate ? new Date(item.releaseDate).getFullYear() : new Date().getFullYear(),
           track_file: item.track_file || '',
         }));
-        
         setTracks(formattedTracks);
       } catch (err) {
         setError('Не удалось загрузить подборку');
-        console.error(err);
       } finally {
         setIsLoading(false);
       }
     }
-
     loadSelection();
   }, [id]);
 
@@ -77,21 +66,8 @@ export default function SelectionPage() {
     return `${mins}:${secs < 10 ? '0' + secs : secs}`;
   };
 
-  if (isLoading) {
-    return (
-      <div className={styles.container}>
-        <div className={styles.loader}>Загрузка подборки...</div>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className={styles.container}>
-        <div className={styles.error}>{error}</div>
-      </div>
-    );
-  }
+  if (isLoading) return <div className={styles.loader}>Загрузка...</div>;
+  if (error) return <div className={styles.error}>{error}</div>;
 
   return (
     <div className={styles.container}>

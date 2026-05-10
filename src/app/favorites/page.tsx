@@ -1,38 +1,31 @@
 'use client';
 
-import { useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
 import { useAppSelector, useAppDispatch } from '@/store/store';
 import { fetchLikedTracks } from '@/store/features/trackSlice';
-import TrackList from '@/components/TrackList/TrackList';
 import { tracksApi as tracks } from '@/data/tracks-api';
+import TrackList from '@/components/TrackList/TrackList';
 import styles from './page.module.css';
 
 export default function FavoritesPage() {
-  const router = useRouter();
   const dispatch = useAppDispatch();
-  const { likedTracks, isLoading } = useAppSelector((state) => state.tracks);
-  const { accessToken } = useAppSelector((state) => state.auth);
+  const [isLoading, setIsLoading] = useState(true); 
+  const accessToken = useAppSelector((state) => state.auth.accessToken);
+  const likedTracks = useAppSelector((state) => state.tracks.likedTracks);
 
- 
-  useEffect(() => {
-    if (!accessToken) {
-      router.push('/auth/login');
-    }
-  }, [accessToken, router]);
-
- 
   useEffect(() => {
     if (accessToken) {
-      dispatch(fetchLikedTracks());
+      dispatch(fetchLikedTracks()).finally(() => setIsLoading(false)); 
+    } else {
+      setIsLoading(false);
     }
   }, [dispatch, accessToken]);
 
-  const favoriteTracks = tracks.filter((track) => likedTracks.includes(track.id));
-
-  if (!accessToken) {
-    return null; 
+  if (isLoading) { 
+    return <div className={styles.loader}>Загрузка избранного...</div>;
   }
+
+  const favoriteTracks = tracks.filter((track) => likedTracks.includes(track.id));
 
   return (
     <div className={styles.container}>

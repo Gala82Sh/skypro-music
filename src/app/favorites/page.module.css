@@ -78,3 +78,10 @@
   padding: 40px;
   font-size: 18px;
 }
+
+.loader {
+  text-align: center;
+  padding: 40px;
+  color: #ffffff;
+  font-size: 18px;
+}
