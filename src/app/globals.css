@@ -48,3 +48,17 @@ a {
   }
 }
 
+.custom-toast {
+  background-color: #580EA2 !important;
+  color: white !important;
+  border-radius: 12px !important;
+  font-family: 'StratosSkyeng', sans-serif !important;
+}
+
+.custom-toast .Toastify__toast-body {
+  font-size: 14px !important;
+}
+
+.custom-toast .Toastify__close-button {
+  color: white !important;
+}

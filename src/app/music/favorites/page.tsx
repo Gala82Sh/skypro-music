@@ -5,24 +5,42 @@ import { useAppSelector, useAppDispatch } from '@/store/store';
 import { fetchLikedTracks } from '@/store/features/trackSlice';
 import { tracksApi as tracks } from '@/data/tracks-api';
 import TrackList from '@/components/TrackList/TrackList';
+import Skeleton from 'react-loading-skeleton';
+import 'react-loading-skeleton/dist/skeleton.css';
 import styles from './page.module.css';
 
 export default function FavoritesPage() {
   const dispatch = useAppDispatch();
-  const [isLoading, setIsLoading] = useState(true); 
+  const [isLoading, setIsLoading] = useState(true);
   const accessToken = useAppSelector((state) => state.auth.accessToken);
   const likedTracks = useAppSelector((state) => state.tracks.likedTracks);
 
   useEffect(() => {
     if (accessToken) {
-      dispatch(fetchLikedTracks()).finally(() => setIsLoading(false)); 
+      setIsLoading(true);
+      dispatch(fetchLikedTracks()).finally(() => setIsLoading(false));
     } else {
       setIsLoading(false);
     }
   }, [dispatch, accessToken]);
 
-  if (isLoading) { 
-    return <div className={styles.loader}>Загрузка избранного...</div>;
+  if (isLoading) {
+    return (
+      <div className={styles.container}>
+        <h1 className={styles.title}>Избранное</h1>
+        {Array(3)
+          .fill(0)
+          .map((_, i) => (
+            <div key={i} style={{ display: 'flex', gap: '20px', marginBottom: '20px', alignItems: 'center' }}>
+              <Skeleton width={51} height={51} circle />
+              <div style={{ flex: 1 }}>
+                <Skeleton width="80%" height={20} />
+                <Skeleton width="50%" height={16} style={{ marginTop: '8px' }} />
+              </div>
+            </div>
+          ))}
+      </div>
+    );
   }
 
   const favoriteTracks = tracks.filter((track) => likedTracks.includes(track.id));
@@ -52,3 +70,4 @@ export default function FavoritesPage() {
     </div>
   );
 }
+
