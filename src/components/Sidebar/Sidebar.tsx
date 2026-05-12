@@ -38,7 +38,7 @@ export default function Sidebar() {
       <div className={styles.sidebar__block}>
         <div className={styles.sidebar__list}>
           <div className={styles.sidebar__item}>
-            <Link href="/selection/2" className={styles.sidebar__link}>
+            <Link href="/music/selection/2" className={styles.sidebar__link}>
               <Image
                 src="/img/playlist01.png"
                 alt="Плейлист дня"
@@ -49,7 +49,7 @@ export default function Sidebar() {
             </Link>
           </div>
           <div className={styles.sidebar__item}>
-            <Link href="/selection/3" className={styles.sidebar__link}>
+            <Link href="/music/selection/3" className={styles.sidebar__link}>
               <Image
                 src="/img/playlist02.png"
                 alt="Танцевальные хиты"
@@ -59,7 +59,7 @@ export default function Sidebar() {
             </Link>
           </div>
           <div className={styles.sidebar__item}>
-            <Link href="/selection/4" className={styles.sidebar__link}>
+            <Link href="/music/selection/4" className={styles.sidebar__link}>
               <Image
                 src="/img/playlist03.png"
                 alt="Инди-заряд"

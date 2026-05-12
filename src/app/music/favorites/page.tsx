@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { useAppSelector, useAppDispatch } from '@/store/store';
 import { fetchLikedTracks } from '@/store/features/trackSlice';
 import { tracksApi as tracks } from '@/data/tracks-api';
@@ -11,18 +12,20 @@ import styles from './page.module.css';
 
 export default function FavoritesPage() {
   const dispatch = useAppDispatch();
+  const router = useRouter();
   const [isLoading, setIsLoading] = useState(true);
   const accessToken = useAppSelector((state) => state.auth.accessToken);
   const likedTracks = useAppSelector((state) => state.tracks.likedTracks);
 
   useEffect(() => {
-    if (accessToken) {
-      setIsLoading(true);
-      dispatch(fetchLikedTracks()).finally(() => setIsLoading(false));
-    } else {
-      setIsLoading(false);
-    }
-  }, [dispatch, accessToken]);
+  if (!accessToken) {
+    router.push('/');  
+    return;
+  }
+
+  setIsLoading(true);
+  dispatch(fetchLikedTracks()).finally(() => setIsLoading(false));
+}, [dispatch, accessToken, router]);
 
   if (isLoading) {
     return (

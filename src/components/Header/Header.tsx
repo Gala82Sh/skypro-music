@@ -14,10 +14,10 @@ export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { accessToken } = useAppSelector((state) => state.auth);
 
- const handleLogout = () => {
-  dispatch(logout());
-  window.location.replace('/');
-};
+  const handleLogout = () => {
+    dispatch(logout());
+    window.location.replace('/');
+  };
 
   return (
     <nav className={styles.main__nav}>
@@ -30,7 +30,7 @@ export default function Header() {
           alt="logo"
         />
       </div>
-      <div 
+      <div
         className={styles.nav__burger}
         onClick={() => setIsMenuOpen(!isMenuOpen)}
       >
@@ -45,7 +45,9 @@ export default function Header() {
               <Link href="/" className={styles.menu__link} onClick={() => setIsMenuOpen(false)}>Главное</Link>
             </li>
             <li className={styles.menu__item}>
-              <Link href="/favorites" className={styles.menu__link} onClick={() => setIsMenuOpen(false)}>Мой плейлист</Link>
+              <Link href="/music/favorites" className={styles.menu__link} onClick={() => setIsMenuOpen(false)}>
+                Мой плейлист
+              </Link>
             </li>
             {accessToken ? (
               <li className={styles.menu__item}>

@@ -6,6 +6,8 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { useAppDispatch, useAppSelector } from '@/store/store';
 import { loginUser, registerUser, clearError } from '@/store/features/authSlice';
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import styles from './AuthForm.module.css';
 
 interface AuthFormProps {
@@ -31,26 +33,24 @@ export default function AuthForm({ type }: AuthFormProps) {
                 router.push('/');
             }
         } else {
-
             if (password.length < 6) {
-                alert('Пароль должен содержать не менее 6 символов');
+                toast.error('Пароль должен содержать не менее 6 символов');
                 return;
             }
             if (password !== confirmPassword) {
-                alert('Пароли не совпадают');
+                toast.error('Пароли не совпадают');
                 return;
             }
-
 
             const username = email.split('@')[0];
 
             const result = await dispatch(registerUser({ email, password, username }));
             if (registerUser.fulfilled.match(result)) {
+                toast.success('Регистрация успешна! Теперь войдите');
                 router.push('/auth/login');
             }
         }
     };
-
 
     if (type === 'login') {
         return (
@@ -100,7 +100,6 @@ export default function AuthForm({ type }: AuthFormProps) {
         );
     }
 
-
     return (
         <div className={styles.container}>
             <div className={styles.modal}>
@@ -111,7 +110,7 @@ export default function AuthForm({ type }: AuthFormProps) {
                         width={140}
                         height={21}
                         priority
-                    />
+                        />
                 </div>
 
                 <form className={styles.form} onSubmit={handleSubmit}>
@@ -155,5 +154,4 @@ export default function AuthForm({ type }: AuthFormProps) {
             </div>
         </div>
     );
-
 }
