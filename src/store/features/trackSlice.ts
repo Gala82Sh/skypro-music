@@ -3,6 +3,18 @@ import { Track } from '@/data/tracks';
 import { get } from '@/api/config';
 import { getFavoriteTracks, addTrackToFavorite, removeTrackFromFavorite } from '@/api/trackApi';
 import { withReauth } from '@/utils/withReauth';
+import { RootState } from '@/store/store';
+
+interface ServerTrack {
+  _id: number;
+  name: string;
+  author?: string;
+  album?: string;
+  duration?: string;
+  genre?: string;
+  year?: number;
+  track_file?: string;
+}
 
 type initialStateType = {
   currentTrack: Track | null;
@@ -26,13 +38,12 @@ const initialState: initialStateType = {
   error: null,
 };
 
-
 export const fetchTracks = createAsyncThunk(
   'tracks/fetchTracks',
   async (_, { rejectWithValue }) => {
     try {
-      const response = await get<{ success: boolean; data: any[] }>('/catalog/track/all/');
-      const tracks: Track[] = response.data.map((item: any) => ({
+      const response = await get<{ success: boolean; data: ServerTrack[] }>('/catalog/track/all/');
+      const tracks: Track[] = response.data.map((item: ServerTrack) => ({
         id: item._id,
         title: item.name,
         author: item.author || 'Неизвестен',
@@ -49,12 +60,11 @@ export const fetchTracks = createAsyncThunk(
   }
 );
 
-
 export const fetchLikedTracks = createAsyncThunk(
   'tracks/fetchLikedTracks',
   async (_, { rejectWithValue, getState }) => {
     try {
-      const state = getState() as any;
+      const state = getState() as RootState;
       const refreshToken = state.auth.refreshToken;
       
       const likedIds = await withReauth(
@@ -68,12 +78,11 @@ export const fetchLikedTracks = createAsyncThunk(
   }
 );
 
-
 export const likeTrack = createAsyncThunk(
   'tracks/likeTrack',
   async (trackId: number, { rejectWithValue, getState }) => {
     try {
-      const state = getState() as any;
+      const state = getState() as RootState;
       const refreshToken = state.auth.refreshToken;
       
       await withReauth(
@@ -92,7 +101,7 @@ export const unlikeTrack = createAsyncThunk(
   'tracks/unlikeTrack',
   async (trackId: number, { rejectWithValue, getState }) => {
     try {
-      const state = getState() as any;
+      const state = getState() as RootState;
       const refreshToken = state.auth.refreshToken;
       
       await withReauth(
@@ -152,7 +161,6 @@ const trackSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-      
       .addCase(fetchTracks.pending, (state) => {
         state.isLoading = true;
         state.error = null;
@@ -165,21 +173,18 @@ const trackSlice = createSlice({
         state.isLoading = false;
         state.error = action.payload as string;
       })
-      
       .addCase(fetchLikedTracks.fulfilled, (state, action) => {
         state.likedTracks = action.payload;
       })
       .addCase(fetchLikedTracks.rejected, (state, action) => {
         console.error('Ошибка загрузки избранного:', action.payload);
       })
-      
       .addCase(likeTrack.fulfilled, (state, action) => {
         const trackId = action.payload;
         if (!state.likedTracks.includes(trackId)) {
           state.likedTracks.push(trackId);
         }
       })
-      
       .addCase(unlikeTrack.fulfilled, (state, action) => {
         const trackId = action.payload;
         state.likedTracks = state.likedTracks.filter(id => id !== trackId);
