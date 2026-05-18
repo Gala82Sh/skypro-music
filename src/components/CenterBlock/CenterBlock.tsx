@@ -10,6 +10,7 @@ interface CenterBlockProps {
   title: string;
   tracks: Track[];
   emptyMessage?: string;
+  isLoading?: boolean; 
 }
 
 export default function CenterBlock({ title, tracks, emptyMessage }: CenterBlockProps) {
