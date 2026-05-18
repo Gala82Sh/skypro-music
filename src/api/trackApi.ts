@@ -21,7 +21,7 @@ export async function getFavoriteTracks(token?: string): Promise<number[]> {
   }
   
   const data = await response.json();
-  return data.data.map((item: any) => item._id);
+  return data.data.map((item: { _id: number }) => item._id);
 }
 
 

@@ -6,10 +6,11 @@ import Link from 'next/link';
 import { useAppDispatch, useAppSelector } from '@/store/store';
 import { logout } from '@/store/features/authSlice';
 import styles from './Sidebar.module.css';
+import { RootState } from '@/store/store';
 
 export default function Sidebar() {
   const dispatch = useAppDispatch();
-  const { user } = useAppSelector((state: any) => state.auth);
+ const { user } = useAppSelector((state: RootState) => state.auth);
   const [userName, setUserName] = useState('Гость');
 
   useEffect(() => {

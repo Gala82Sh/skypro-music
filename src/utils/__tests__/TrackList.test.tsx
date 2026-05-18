@@ -1,7 +1,8 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
+import { Track } from '@/data/tracks';
 
-const TrackListMock = ({ tracks }: { tracks: any[] }) => {
+const TrackListMock = ({ tracks }: { tracks: Track[] }) => {
   return (
     <div data-testid="track-list">
       {tracks.map((track) => (
